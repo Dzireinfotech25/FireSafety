@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dzire × UMA Technical | Centralized Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --fire: #ff3300;
+            --tech: #00ccff;
+            --dark: #05080f;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; scroll-behavior: smooth; }
+        body { background: var(--dark); color: white; font-family: 'Poppins', sans-serif; overflow-x: hidden; line-height: 1.6; }
+
+        /* Scholarship Popup with Payment & Timer */
+        #scholarship-popup {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.7);
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            padding: 30px; border-radius: 20px; border: 2px solid var(--tech);
+            z-index: 10000; display: none; text-align: center;
+            box-shadow: 0 0 50px rgba(0, 204, 255, 0.4); transition: 0.5s ease;
+            width: 90%; max-width: 420px;
+        }
+        #scholarship-popup.show { display: block; transform: translate(-50%, -50%) scale(1); }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 25px; cursor: pointer; color: #fff; }
+
+        .timer-box { 
+            background: rgba(255, 51, 0, 0.1); color: var(--fire); 
+            padding: 10px; border-radius: 10px; font-weight: 800; 
+            margin: 15px 0; border: 1px dashed var(--fire); font-size: 1.2rem;
+        }
+
+        .pay-now-btn {
+            background: linear-gradient(45deg, #25d366, #128c7e);
+            color: white; text-decoration: none; padding: 15px;
+            display: block; border-radius: 10px; font-weight: 800;
+            margin-top: 20px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            transition: 0.3s;
+        }
+
+        /* Header & Layout */
+        header { background: rgba(0,0,0,0.95); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; top: 0; z-index: 2000; border-bottom: 2px solid var(--tech); }
+        .logo-group img { height: 45px; margin-right: 10px; vertical-align: middle; }
+        .brochure-btn { background: #fff; color: #000; padding: 10px 18px; border-radius: 5px; text-decoration: none; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
+
+        .hero { height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .hero-slides { position: absolute; inset:0; z-index: 1; }
+        .slide { position: absolute; inset:0; background-size: cover; background-position: center; opacity: 0; transition: 1.5s; filter: brightness(0.4); }
+        .slide.active { opacity: 1; transform: scale(1.05); }
+        .hero-content { position: relative; z-index: 10; text-align: center; padding: 20px; margin-top: 60px; }
+        .hero-content h1 { font-family: 'Montserrat'; font-size: clamp(1.8rem, 6vw, 3.5rem); line-height: 1.2; }
+        .hero-content span { background: linear-gradient(to right, var(--tech), var(--fire)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .section-padding { padding: 80px 5%; }
+
+        /* Course Table */
+        .table-wrapper { overflow-x: auto; border-radius: 15px; background: rgba(255,255,255,0.02); border: 1px solid var(--glass); margin-top: 30px; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { background: rgba(0, 204, 255, 0.1); color: var(--tech); padding: 15px; text-align: left; border-bottom: 2px solid var(--tech); }
+        td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+
+        /* Form & Map */
+        .form-container { max-width: 800px; margin: 0 auto 40px auto; background: rgba(10,15,25,0.9); padding: 40px; border-radius: 20px; border: 1px solid var(--tech); backdrop-filter: blur(10px); }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px; }
+        input, select { width: 100%; padding: 15px; border-radius: 8px; background: #111 !important; color: #fff !important; border: 1px solid #333; font-size: 1rem; outline: none; }
+        .full-w { grid-column: span 2; }
+        .submit-btn { width: 100%; padding: 18px; border-radius: 8px; border: none; background: linear-gradient(45deg, var(--tech), var(--fire)); color: white; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+
+        .map-container { width: 100%; max-width: 800px; margin: 0 auto; border-radius: 20px; overflow: hidden; border: 2px solid var(--tech); box-shadow: 0 0 20px rgba(0, 204, 255, 0.2); }
+        .map-container iframe { width: 100%; display: block; }
+
+        /* Floats */
+        .floats { position: fixed; bottom: 25px; right: 25px; display: flex; flex-direction: column; gap: 15px; z-index: 3000; }
+        .f-btn { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; color: white; text-decoration: none; box-shadow: 0 5px 20px rgba(0,0,0,0.6); }
+        .f-wa { background: #25d366; }
+        .f-call { background: var(--tech); animation: shake 0.5s infinite alternate; }
+        @keyframes shake { from { transform: rotate(-10deg); } to { transform: rotate(10deg); } }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; padding: 15px; gap: 10px; }
+            .input-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="scholarship-popup">
+        <span class="close-btn" onclick="closePopup()">×</span>
+        <i class="fas fa-bolt" style="font-size: 40px; color: #ffcc00; margin-bottom: 15px;"></i>
+        <h2 style="color: #fff;">Limited Period Offer!</h2>
+        <p>सिर्फ ₹200 में अपनी सीट बुक करें और पायें 20% Scholarship</p>
+        
+        <div class="timer-box">
+            Offer Ends In: <span id="timer">10:00</span>
+        </div>
+
+        <a href="https://rzp.io/rzp/q5avJ7s" class="pay-now-btn">
+            <i class="fas fa-credit-card"></i> Pay ₹200 Now
+        </a>
+    </div>
+
+    <header>
+        <div class="logo-group">
+            <img src="Dzire-removebg-preview.png" alt="Dzire">
+            <img src="Uma-removebg-preview.png" alt="UMA">
+        </div>
+        <a href="#" class="brochure-btn"><i class="fas fa-download"></i> Course Brochure</a>
+    </header>
+
+    <section class="hero">
+        <div class="hero-slides">
+            <div class="slide active" style="background-image: url('Gemini_Generated_Image_qttx56qttx56qttx.png')"></div>
+            <div class="slide" style="background-image: url('Gemini_Generated_Image_3i9oz3i9oz3i9oz3.png')"></div>
+            <div class="slide" style="background-image: url('Gemini_Generated_Image_78vnfg78vnfg78vn.png')"></div>
+        </div>
+       <div class="hero-content">
+    <h1>Expert Training In <br><span>Fire-Safety & Computer</span></h1>
+    
+    <div style="margin-top: 20px; display: inline-flex; align-items: center; gap: 15px; padding: 10px 25px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 204, 255, 0.4); border-radius: 15px; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        
+        <div style="display: flex; gap: 10px; border-right: 1px solid rgba(255,255,255,0.2); padding-right: 15px;">
+            <img src="iso-certified-golden-label-vector-illustration-51941869-removebg-preview (1).png" alt="Skill India" style="height: 60px; filter: brightness(1.2);">
+            <img src="NSDC-Preview-removebg-preview (1).png" alt="NSDC" style="height: 80px; filter: brightness(1.2);">
+        </div>
+
+        <div style="text-align: left;">
+            <p style="margin: 0; font-weight: 800; font-size: 1rem; letter-spacing: 0.5px; color: #fff;">
+                <span style="color: #00ff88;">100%</span> PLACEMENT SUPPORT
+            </p>
+            <p style="margin: 0; font-size: 0.8rem; font-weight: 600; color: #00ccff; text-transform: uppercase;">
+                Govt. Recognized & NSDC Approved
+            </p>
+        </div>
+    </div>
+
+    <br>
+    <a href="#admission" class="submit-btn" style="text-decoration: none; display: inline-block; width: auto; padding: 12px 40px; border-radius: 50px; margin-top: 30px;">Enroll Now</a>
+</div>
+    </section>
+
+    <section class="section-padding">
+        <h2 style="text-align: center;">Govt. Approved <span style="color:var(--fire)">Safety Courses</span></h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>S.N</th><th>Course Name</th><th>Code</th><th>Duration</th><th>Eligibility</th><th>Fee</th></tr>
+                </thead>
+                <tbody id="courseTable"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section-padding" id="admission">
+        <div class="form-container">
+            <h2 style="text-align: center;">Online Admission Enquiry</h2>
+            <p style="text-align: center; font-size: 0.85rem; color: #888; margin-bottom: 25px;">📍 Address: Purana Halima School, Chhapra Mod, Lar, Deoria (U.P)</p>
+            <form onsubmit="return sendToWhatsApp()">
+                <div class="input-grid">
+                    <input type="text" id="stuName" placeholder="आपका नाम" required>
+                    <input type="tel" id="stuPhone" placeholder="WhatsApp नंबर" required>
+                    <select id="stuDept" onchange="loadCourseOptions()" required>
+                        <option value="">विभाग चुनें</option>
+                        <option value="IT">IT Academy (Dzire)</option>
+                        <option value="FIRE">Fire & Safety (UMA)</option>
+                    </select>
+                    <select id="stuCourse" required>
+                        <option value="">कोर्स चुनें</option>
+                    </select>
+                    <input type="text" id="stuLoc" class="full-w" placeholder="आपका शहर">
+                    <button type="submit" class="submit-btn full-w">Submit to WhatsApp</button>
+                </div>
+            </form>
+        </div>
+
+        <h2 style="text-align: center; margin-bottom: 30px; margin-top: 40px;">Find Our <span style="color:var(--tech)">Training Center</span></h2>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3192150.1362197893!2d80.42989253948734!3d26.13431082690147!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39924b9bfd5e9c63%3A0x71912588d06b12c2!2sDzire%20Infotech%20-%20Computer%20%26%20Mobile%20Repairing%20Institute%20in%20Deoria%2C%20Lar!5e0!3m2!1sen!2sin!4v1768329561136!5m2!1sen!2sin" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </section>
+
+    <div class="floats">
+        <a href="tel:+919026187944" class="f-btn f-call"><i class="fas fa-phone-alt"></i></a>
+        <a href="https://wa.me/919026187944" class="f-btn f-wa"><i class="fab fa-whatsapp"></i></a>
+    </div>
+
+    <script>
+        const allSafetyCourses = [
+            {sn: 1, name: "Diploma in Fire-Safety & Hazard Management", code: "DFSHM", dur: "1 Year", elg: "10th", fee: "58,000/-"},
+            {sn: 2, name: "Diploma in Fire Sub Officer", code: "DFSO", dur: "1 Year", elg: "12th/ITI", fee: "60,000/-"},
+            {sn: 3, name: "Diploma in Fire-Safety & Security Management", code: "DFS-SM", dur: "1 Year", elg: "10th", fee: "62,000/-"},
+            {sn: 4, name: "Diploma in Industrial Safety", code: "DIS", dur: "1 Year", elg: "12th/ITI", fee: "62,000/-"},
+            {sn: 5, name: "Diploma in Safety Management", code: "DSM", dur: "1 Year", elg: "10th", fee: "63,000/-"},
+            {sn: 6, name: "Diploma in Fireman Training", code: "DFT", dur: "1 Year", elg: "10th", fee: "60,000/-"},
+            {sn: 7, name: "Advance Diploma in Industrial Safety", code: "ADIS", dur: "1 Year", elg: "B.Sc/Dip/B.E", fee: "65,000/-"},
+            {sn: 8, name: "Advance Diploma in Safety Management", code: "ADSM", dur: "1 Year", elg: "Any Graduate", fee: "65,000/-"},
+            {sn: 9, name: "PG Diploma in Fire-Safety & Hazard Management", code: "PGDFSHM", dur: "1 Year", elg: "Any Graduate", fee: "65,000/-"},
+            {sn: 10, name: "PG Diploma in Industrial Safety", code: "PGDIS", dur: "1 Year", elg: "B.Sc/Dip/B.E", fee: "65,000/-"}
+        ];
+
+        const itCourses = ["ADCA (1 Year)", "DCA (6 Months)", "Tally Prime", "CCC / O Level", "Typing"];
+
+        const tb = document.getElementById('courseTable');
+        allSafetyCourses.forEach(c => {
+            tb.innerHTML += `<tr><td>${c.sn}</td><td>${c.name}</td><td>${c.code}</td><td>${c.dur}</td><td>${c.elg}</td><td style="color:var(--tech); font-weight:700">${c.fee}</td></tr>`;
+        });
+
+        function loadCourseOptions() {
+            const dept = document.getElementById('stuDept').value;
+            const menu = document.getElementById('stuCourse');
+            menu.innerHTML = '<option value="">कोर्स चुनें</option>';
+            if(dept === 'FIRE') allSafetyCourses.forEach(x => menu.innerHTML += `<option value='${JSON.stringify(x)}'>${x.name}</option>`);
+            else if(dept === 'IT') itCourses.forEach(x => menu.innerHTML += `<option value='${x}'>${x}</option>`);
+        }
+
+        function sendToWhatsApp() {
+            const name = document.getElementById('stuName').value;
+            const phone = document.getElementById('stuPhone').value;
+            const loc = document.getElementById('stuLoc').value;
+            const courseVal = document.getElementById('stuCourse').value;
+            let courseDetails = "";
+            try {
+                const cObj = JSON.parse(courseVal);
+                courseDetails = `%0A*Course:* ${cObj.name}%0A*Fees:* ${cObj.fee}`;
+            } catch(e) { courseDetails = `%0A*Course:* ${courseVal}`; }
+            const message = `*NEW ENQUIRY*%0A*Student:* ${name}%0A*Phone:* ${phone}${courseDetails}`;
+            window.open(`https://wa.me/919026187944?text=${message}`, '_blank');
+            return false;
+        }
+
+        // --- UPDATED POPUP & TIMER LOGIC ---
+        let popupShown = false;
+
+        function showPopup() {
+            if (!popupShown) {
+                document.getElementById('scholarship-popup').classList.add('show');
+                startTimer(600, document.querySelector('#timer'));
+                popupShown = true;
+            }
+        }
+
+        function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                display.textContent = minutes + ":" + seconds;
+                if (--timer < 0) timer = duration;
+            }, 1000);
+        }
+
+        // Method 1: 1 Minute Delay
+        setTimeout(showPopup, 30000);
+
+        // Method 2: Exit Intent (Mouse leaves window)
+        document.addEventListener("mouseleave", function(e){
+            if(e.clientY < 0) showPopup();
+        }, false);
+
+        function closePopup() { document.getElementById('scholarship-popup').classList.remove('show'); }
+
+        // Slide logic
+        let current = 0;
+        const slides = document.querySelectorAll('.slide');
+        setInterval(() => {
+            slides[current].classList.remove('active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('active');
+        }, 4000);
+    </script>
+</body>
+</html>
